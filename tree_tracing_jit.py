@@ -30,7 +30,6 @@ def trace_{id}():
         {s}raise GuardFailed(count, {p})'''.format_map({'s':s,'p':p})
                 return ec
             for (i, trace_step) in enumerate(trace):
-                p += [i]
                 if trace_step[0] == TRACE_INSTR:
                     if trace_step[1] == JUMP:
                         ec += '''
@@ -51,10 +50,10 @@ def trace_{id}():
                 elif trace_step[0] == TRACE_GUARD_GT:
                     ec += '''
         {s}if self.stack[-1] > {c}:'''.format_map({'s':s,'c':trace_step[1]})
-                    ec += inner(trace_step[2], s+'    ', p+[2])
+                    ec += inner(trace_step[2], s+'    ', p+[i, 2])
                     ec += '''
         {s}else:'''.format_map({'s':s})
-                    ec += inner(trace_step[3], s+'    ', p+[3])
+                    ec += inner(trace_step[3], s+'    ', p+[i, 3])
 
                 elif trace_step[0] == TRACE_ENTER_TRACE:
                     ec += '''
@@ -97,8 +96,22 @@ def trace_{id}():
                     except GuardFailed as e:
                         print("Guard failed after", e.count, "iterations, leaving trace for interpreter execution")
                         self.print_state()
-                        return # Trace execution was not good for this iteration, so, fallback to regular interpreter
-                               # the jitted code is modifying interpreter state, no need to sync
+                        # Trace execution was not good for this iteration, so, fallback to RECORDING interpreter
+                        # the jitted code is modifying interpreter state, no need to sync
+                        print("Recording after guard")
+                        self.recording_trace = True
+                        recording_interpreter = RecordingInterpreter(self.pc, self.stack, self.code, self.loops, self.recording_trace, old_pc)
+                        recording_interpreter.trace = loop_info['trace']
+                        recording_interpreter.inner = navigate_inner(e.path, recording_interpreter.trace)
+                        try:
+                            recording_interpreter.interpret()
+                            return
+                        except TraceRecordingEnded:
+                            self.pc = recording_interpreter.pc
+                            self.recording_trace = False
+                            loop_info['executable_trace'] = self.translate_trace(loop_info)
+                            print("Recompiled execution trace:", loop_info['executable_trace'])
+                            TracingInterpreter.run_JUMP(self)
 
                 if loop_info['hotness'] > 10 and loop_info['has_trace'] == False:
                     if not self.recording_trace:
@@ -140,6 +153,15 @@ class GuardFailed(Exception):
         self.count = count
         self.path = path
 
+def navigate_inner(path, trace):
+    if path[1:]==[]:
+        assert trace[path[0]] == None
+        inner = []
+        trace[path[0]] = inner
+        return inner
+    else:
+        return navigate_inner(path[1:], trace[path[0]])
+
 class RecordingInterpreter(TracingInterpreter):
     def __init__(self, pc, stack, code, loops, recording_trace, end_of_trace):
         self.trace = []
@@ -172,7 +194,7 @@ class RecordingInterpreter(TracingInterpreter):
             inner = [ (TRACE_INSTR, JUMP, self.pc+3) ]
             left = None
             right = inner
-        self.inner.append( (TRACE_GUARD_GT, self.code[self.pc+1], left, right) )
+        self.inner.append( [TRACE_GUARD_GT, self.code[self.pc+1], left, right] )
         self.inner = inner
 
         TracingInterpreter.run_GT(self)
