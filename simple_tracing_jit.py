@@ -8,6 +8,14 @@ one_simple_loop = [
     HALT         # 9
 ]
 
+one_simple_loop1 = [
+    PUSH, 0,     # 0
+    GT, 10, 9, # 2
+    ADD, 1,       # 5
+    JUMP, 2,      # 7
+    HALT         # 9
+]
+
 two_simple_loops = [
     PUSH, 0,     # 0
     GT, 50000, 9, # 2
@@ -65,6 +73,7 @@ nested_loops2 = [
 ]
 
 code = one_simple_loop
+code = one_simple_loop1
 code = two_simple_loops
 code = nested_loops
 code = nested_loops1
@@ -104,6 +113,7 @@ class Interpreter(object):
 
     def interpret(self):
         while True:
+            #print("running ", self.pc)
             instruction_to_run = self.code[self.pc]
 
             if instruction_to_run == PUSH:
@@ -117,6 +127,7 @@ class Interpreter(object):
             elif instruction_to_run == POP:
                 self.run_POP()
             elif instruction_to_run == HALT:
+                #print("HALT")
                 return self.stack[-1]
 
 class UnknownTraceRecordError(Exception):
@@ -223,6 +234,7 @@ def trace_{id}():
                         try:
                             print("Trace recording started at pc =", new_pc, "until (included) pc =", old_pc)
                             recording_interpreter.interpret()
+                            return
                         except TraceRecordingEnded:
                             print("Trace recording ended!")
                             self.pc = recording_interpreter.pc # the rest are mutable datastructures that were shared with the recording interp
