@@ -16,6 +16,13 @@ one_simple_loop1 = [
     HALT         # 9
 ]
 
+one_simple_loop2 = [
+    PUSH, 500,   # 0
+    ADD, -1,     # 2
+    GT, 0, 2,    # 4
+    HALT         # 7
+]
+
 two_simple_loops = [
     PUSH, 0,     # 0
     GT, 50000, 9, # 2
@@ -93,6 +100,7 @@ nested_double_loops = [
 examples = [
     ("1", one_simple_loop, 50001),
     ("1a", one_simple_loop1, 11),
+    ("1b", one_simple_loop2, 0),
     ("2", two_simple_loops, 100001),
     ("3", nested_loops, 32),
     ("3a", nested_loops1, 32),
