@@ -70,7 +70,7 @@ class Interpreter(object):
         #print "Running POP"
         self.stack.pop()
         self.pc += 1
-    
+
     def interpret(self):
         while True:
             instruction_to_run = self.code[self.pc]
@@ -150,7 +150,7 @@ def trace_%d():
         #print "JITted scope =", self.jitted_code_scope
 
     def enter_trace(self, loop_info):
-        #print loop_info['executable_trace'] 
+        #print loop_info['executable_trace']
         exec loop_info['executable_trace'] in self.jitted_code_scope # defines the trace in the jitted context
         exec 'trace_%d()' % (loop_info['trace_id']) in self.jitted_code_scope
 
@@ -161,11 +161,11 @@ def trace_%d():
         if new_pc < old_pc:
             if (new_pc, old_pc) in self.loops:
                 loop_info = self.loops[(new_pc, old_pc)]
-                
+
                 loop_info['hotness'] += 1
 
                 if loop_info['has_trace']:
-                    Interpreter.run_JUMP(self) # run the jump, then run the trace                    
+                    Interpreter.run_JUMP(self) # run the jump, then run the trace
                     #print "Running previously-compiled trace for loop", new_pc, "-",  old_pc
                     print "Starting trace", new_pc, '-', old_pc
                     self.print_state()
@@ -177,12 +177,12 @@ def trace_%d():
                         self.print_state()
                         return # Trace execution was not good for this iteration, so, fallback to regular interpreter
                                # the jitted code is modifying interpreter state, no need to sync
-                
+
                 if loop_info['hotness'] > 10 and loop_info['has_trace'] == False:
                     if not self.recording_trace:
                         print "Found new hot loop from", new_pc, "to", old_pc, "(included)"
                         self.recording_trace = True
-                        
+
                         Interpreter.run_JUMP(self) # run the jump normally so that we start the trace at the beginning of the loop
                         recording_interpreter = RecordingInterpreter(self.pc, self.stack, self.code, self.loops, self.recording_trace, old_pc)
                         try:
@@ -196,7 +196,7 @@ def trace_%d():
                             loop_info['trace_id'], loop_info['trace'] = self.trace_id, recording_interpreter.trace
                             self.trace_id += 1
                             loop_info['has_trace'], loop_info['executable_trace'] =  True, self.translate_trace(loop_info)
-                            
+
                             print "Now jumping into compiled trace!"
                             TracingInterpreter.run_JUMP(self) # recursive call, but this time it will run the compiled trace
                             return
@@ -204,7 +204,7 @@ def trace_%d():
             else:
                 self.loops[(new_pc, old_pc)] = {'hotness': 1, 'has_trace': False}
                 self.recording_trace = False
-        
+
         Interpreter.run_JUMP(self)
 
 class TraceRecordingEnded(Exception):
@@ -221,7 +221,7 @@ class RecordingInterpreter(TracingInterpreter):
         self.end_of_trace = end_of_trace
 
         TracingInterpreter.__init__(self, pc, stack, code, loops, recording_trace)
-    
+
     def is_end_of_trace(self, current_pc):
         return current_pc == self.end_of_trace
 
