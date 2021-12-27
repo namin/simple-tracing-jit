@@ -97,7 +97,6 @@ class TracingInterpreter(Interpreter):
         self.recording_trace = recording_trace
         self.jitted_code_scope = {'GuardFailed': GuardFailed, 'self': self}
         self.trace_id = 0
-        self.count = 0
 
         Interpreter.__init__(self, pc, stack, code)
 
@@ -106,9 +105,9 @@ class TracingInterpreter(Interpreter):
         # create python code to run the trace
         executable_trace = '''
 def trace_%d():
-    self.count = 0
+    count = 0
     while True:
-        self.count += 1
+        count += 1
 ''' % loop_info['trace_id']
 
         for trace_step in trace:
@@ -133,12 +132,12 @@ def trace_%d():
             elif trace_step[0] == TRACE_GUARD_GT_JUMP:
                 compiled_code = '''
         if self.stack[-1] <= %d:
-            raise GuardFailed()''' % (trace_step[1])
+            raise GuardFailed(count)''' % (trace_step[1])
 
             elif trace_step[0] == TRACE_GUARD_GT_NOT_JUMP:
                 compiled_code = '''
         if self.stack[-1] > %d:
-            raise GuardFailed()''' % (trace_step[1])
+            raise GuardFailed(count)''' % (trace_step[1])
             elif trace_step[0] == TRACE_ENTER_TRACE:
                 compiled_code = '''
         trace_%d()''' % (trace_step[1]['trace_id'])
@@ -176,8 +175,8 @@ def trace_%d():
                     try:
                         self.enter_trace(loop_info)
                         # can a trace leave normally? no, it is an infinite loop
-                    except GuardFailed:
-                        print("Guard failed after", self.count, "iterations, leaving trace for interpreter execution")
+                    except GuardFailed as e:
+                        print("Guard failed after", e.count, "iterations, leaving trace for interpreter execution")
                         self.print_state()
                         return # Trace execution was not good for this iteration, so, fallback to regular interpreter
                                # the jitted code is modifying interpreter state, no need to sync
@@ -217,7 +216,8 @@ class TraceRecordingEnded(Exception):
 TRACE_INSTR, TRACE_GUARD_GT_JUMP, TRACE_GUARD_GT_NOT_JUMP, TRACE_ENTER_TRACE  = range(4)
 
 class GuardFailed(Exception):
-    pass
+    def __init__(self, count):
+        self.count = count
 
 class RecordingInterpreter(TracingInterpreter):
     def __init__(self, pc, stack, code, loops, recording_trace, end_of_trace):
