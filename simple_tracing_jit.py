@@ -35,9 +35,9 @@ nested_loops = [
     HALT         # 19
 ]
 
-#code = one_simple_loop
-#code = two_simple_loops
-#code = nested_loops
+code = one_simple_loop
+code = two_simple_loops
+code = nested_loops
 
 class Interpreter(object):
     def __init__(self, pc, stack, code):
@@ -47,24 +47,24 @@ class Interpreter(object):
 
     def run_PUSH(self):
         #print "Running PUSH"
-        self.stack.append(code[self.pc+1])
+        self.stack.append(self.code[self.pc+1])
         self.pc += 2
 
     def run_GT(self):
         #print "Running GT"
-        if self.stack[-1] > code[self.pc+1]:
-            self.pc = code[self.pc+2]
+        if self.stack[-1] > self.code[self.pc+1]:
+            self.pc = self.code[self.pc+2]
         else:
             self.pc += 3
 
     def run_ADD(self):
         #print "Running ADD"
-        self.stack[-1] += code[self.pc+1]
+        self.stack[-1] += self.code[self.pc+1]
         self.pc += 2
 
     def run_JUMP(self):
         #print "Running JUMP"
-        self.pc = code[self.pc+1]
+        self.pc = self.code[self.pc+1]
 
     def run_POP(self):
         #print "Running POP"
