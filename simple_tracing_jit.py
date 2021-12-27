@@ -154,7 +154,7 @@ def trace_%d():
         #print("JITted scope =", self.jitted_code_scope)
 
     def enter_trace(self, loop_info):
-        #print(loop_info['executable_trace'])
+        #print('enter_trace:', loop_info['executable_trace'])
         exec(loop_info['executable_trace'], self.jitted_code_scope) # defines the trace in the jitted context
         exec('trace_%d()' % (loop_info['trace_id']), self.jitted_code_scope)
 
@@ -266,6 +266,7 @@ class RecordingInterpreter(TracingInterpreter):
         TracingInterpreter.run_POP(self)
 
     def enter_trace(self, loop_info):
+        #print("Recording ENTER_TRACE")
         self.trace.append( (TRACE_ENTER_TRACE, loop_info) )
         TracingInterpreter.enter_trace(self, loop_info)
 
