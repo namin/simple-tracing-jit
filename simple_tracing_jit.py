@@ -35,6 +35,20 @@ nested_loops = [
     HALT         # 19
 ]
 
+nested_loops1 = [
+    PUSH, 0,     # 0 - outer loop counter
+    GT, 30, 19, # 2 - start of outer loop
+    PUSH, 0,     # 5 - inner loop counter
+    GT, 10, 14,  # 7 - start of inner loop
+    ADD, 1,      # 10
+    JUMP, 7,     # 12 - end of inner loop
+    POP,         # 14
+    ADD, 2,      # 15
+    JUMP, 2,      # 17 - end of outer loop
+
+    HALT         # 19
+]
+
 nested_loops2 = [
     PUSH, 0,     # 0 - outer loop counter
     GT, 70, 22, # 2 - start of outer loop
@@ -53,6 +67,7 @@ nested_loops2 = [
 code = one_simple_loop
 code = two_simple_loops
 code = nested_loops
+code = nested_loops1
 code = nested_loops2
 
 class Interpreter(object):
