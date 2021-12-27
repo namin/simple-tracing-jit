@@ -104,11 +104,12 @@ class TracingInterpreter(Interpreter):
         trace = loop_info['trace']
         # create python code to run the trace
         executable_trace = '''
-def trace_%d():
+def trace_{id}():
     count = 0
     while True:
         count += 1
-''' % loop_info['trace_id']
+        print('in trace_{id}, iteration '+str(count))
+'''.format_map({'id': loop_info['trace_id']})
 
         for trace_step in trace:
             if trace_step[0] == TRACE_INSTR:
