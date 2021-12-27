@@ -267,4 +267,4 @@ class RecordingInterpreter(TracingInterpreter):
 
 
 print TracingInterpreter(0, [], code, {}, False).interpret()
-#print Interpreter(0, [], code).interpret()
+print Interpreter(0, [], code).interpret()
