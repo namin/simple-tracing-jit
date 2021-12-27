@@ -4,4 +4,4 @@ This technique has been implemented in PyPy [[Bolz et al., 2009](https://dl.acm.
 
 ## TODOs / Limitations
 
-- [ ] For nested loops, the outer loop keeps being re-entered rather than entered once. This is because the inner exception bubbles up to the top. Is this standard? Maybe relevant [2013 paper](https://dl.acm.org/doi/10.1145/2480360.2384586).
+- [ ] For nested loops, the outer loop keeps being re-entered rather than entered once. This is because the inner exception bubbles up to the top. Is this standard? Maybe relevant [2012 paper](https://dl.acm.org/doi/10.1145/2480360.2384586).
