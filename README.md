@@ -1,5 +1,3 @@
-*This is a work in progress*
-
-The purpose of this project is to build a simple, easy to understand interpreter with a tracing JIT. Tracing is a novel technique for improving the performance of interpreters and VMs described by Andreas Gal ( http://www.ics.uci.edu/~franz/Site/pubs-pdf/ICS-TR-07-12.pdf ). This technique has been implemented in the Python interpreter PyPy ( http://codespeak.net/pypy/extradoc/talk/icooolps2009/bolz-tracing-jit-final.pdf ) and Mozilla Firefox ( http://uci.academia.edu/AndreasGal/Papers/212381/Trace-Based_Just-In-Time_Type_Specialization_for_Dynamic_Languages ) with very good results.
-
-
+This project builds a simple, easy to understand interpreter with a tracing JIT.
+Tracing is a technique for improving the performance of interpreters and VMs described by [Gal et al. (2007)](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.85.2412&rep=rep1&type=pdf).
+This technique has been implemented in the Python interpreter PyPy [[Bolz et al., 2009](https://dl.acm.org/doi/10.1145/1565824.1565827)] and Mozilla Firefox [[Gal et al., 2009](https://dl.acm.org/doi/10.1145/1543135.1542528)].
