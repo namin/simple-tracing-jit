@@ -27,7 +27,7 @@ def trace_{id}():
             ec = ''
             if trace is None:
                 ec += '''
-            {s}raise GuardFailed(count, {p})'''.format_map({'s':s,'p':p})
+        {s}raise GuardFailed(count, {p})'''.format_map({'s':s,'p':p})
                 return ec
             for (i, trace_step) in enumerate(trace):
                 p += [i]
@@ -143,6 +143,7 @@ class GuardFailed(Exception):
 class RecordingInterpreter(TracingInterpreter):
     def __init__(self, pc, stack, code, loops, recording_trace, end_of_trace):
         self.trace = []
+        self.inner = self.trace
         self.end_of_trace = end_of_trace
 
         TracingInterpreter.__init__(self, pc, stack, code, loops, recording_trace)
@@ -152,28 +153,34 @@ class RecordingInterpreter(TracingInterpreter):
 
     def run_PUSH(self):
         #print("Recording PUSH")
-        self.trace.append( (TRACE_INSTR, self.code[self.pc], self.code[self.pc+1]) )
+        self.inner.append( (TRACE_INSTR, self.code[self.pc], self.code[self.pc+1]) )
         TracingInterpreter.run_PUSH(self)
 
     def run_ADD(self):
         #print("Recording ADD")
-        self.trace.append( (TRACE_INSTR, self.code[self.pc], self.code[self.pc+1]) )
+        self.inner.append( (TRACE_INSTR, self.code[self.pc], self.code[self.pc+1]) )
         TracingInterpreter.run_ADD(self)
 
     def run_GT(self):
         #print("Recording GT")
 
         if self.stack[-1] > self.code[self.pc+1]:
-            self.trace.append( (TRACE_GUARD_GT, self.code[self.pc+1], [(TRACE_INSTR, JUMP, self.code[self.pc+2])], None) )
+            inner = [ (TRACE_INSTR, JUMP, self.code[self.pc+2]) ]
+            left = inner
+            right = None
         else:
-            self.trace.append( (TRACE_GUARD_GT, self.code[self.pc+1], None, [(TRACE_INSTR, JUMP, self.pc+3)]) )
+            inner = [ (TRACE_INSTR, JUMP, self.pc+3) ]
+            left = None
+            right = inner
+        self.inner.append( (TRACE_GUARD_GT, self.code[self.pc+1], left, right) )
+        self.inner = inner
 
         TracingInterpreter.run_GT(self)
 
     def run_JUMP(self):
         end_of_trace = self.is_end_of_trace(self.pc)
         #print("Recording JUMP")
-        self.trace.append( (TRACE_INSTR, self.code[self.pc], self.code[self.pc+1]) )
+        self.inner.append( (TRACE_INSTR, self.code[self.pc], self.code[self.pc+1]) )
         if end_of_trace:
             raise TraceRecordingEnded()
 
@@ -181,12 +188,12 @@ class RecordingInterpreter(TracingInterpreter):
 
     def run_POP(self):
         #print("Recording POP")
-        self.trace.append( (TRACE_INSTR, POP))
+        self.inner.append( (TRACE_INSTR, POP))
         TracingInterpreter.run_POP(self)
 
     def enter_trace(self, loop_info):
         #print("Recording ENTER_TRACE")
-        self.trace.append( (TRACE_ENTER_TRACE, loop_info) )
+        self.inner.append( (TRACE_ENTER_TRACE, loop_info) )
         TracingInterpreter.enter_trace(self, loop_info)
 
 
@@ -195,5 +202,6 @@ def interpret(code):
 
 from examples import examples
 for (title, code, expected) in examples:
+    print("# Example", title)
     res = interpret(code)
     assert expected == res, "in example %s, expected %d, got %d" % (title, expected, res)
