@@ -37,7 +37,7 @@ nested_loops = [
 
 nested_loops2 = [
     PUSH, 0,     # 0 - outer loop counter
-    GT, 50, 22, # 2 - start of outer loop
+    GT, 70, 22, # 2 - start of outer loop
     GT, 24, 18, # +3
     PUSH, 0,     # 5+3 - inner loop counter
     GT, 15, 17,  # 7+3 - start of inner loop
