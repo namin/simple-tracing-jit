@@ -97,6 +97,7 @@ class TracingInterpreter(Interpreter):
         self.recording_trace = recording_trace
         self.jitted_code_scope = {'GuardFailed': GuardFailed, 'self': self}
         self.trace_id = 0
+        self.count = 0
 
         Interpreter.__init__(self, pc, stack, code)
 
@@ -105,7 +106,10 @@ class TracingInterpreter(Interpreter):
         # create python code to run the trace
         executable_trace = '''
 def trace_%d():
-    while True:''' % loop_info['trace_id']
+    self.count = 0
+    while True:
+        self.count += 1
+''' % loop_info['trace_id']
 
         for trace_step in trace:
             if trace_step[0] == TRACE_INSTR:
@@ -173,7 +177,7 @@ def trace_%d():
                         self.enter_trace(loop_info)
                         # can a trace leave normally? no, it is an infinite loop
                     except GuardFailed:
-                        print "Guard failed, leaving trace for interpreter execution"
+                        print "Guard failed after", self.count, "iterations, leaving trace for interpreter execution"
                         self.print_state()
                         return # Trace execution was not good for this iteration, so, fallback to regular interpreter
                                # the jitted code is modifying interpreter state, no need to sync
@@ -196,7 +200,7 @@ def trace_%d():
                             loop_info['trace_id'], loop_info['trace'] = self.trace_id, recording_interpreter.trace
                             self.trace_id += 1
                             loop_info['has_trace'], loop_info['executable_trace'] =  True, self.translate_trace(loop_info)
-
+                            print "Execution trace:", loop_info['executable_trace']
                             print "Now jumping into compiled trace!"
                             TracingInterpreter.run_JUMP(self) # recursive call, but this time it will run the compiled trace
                             return
