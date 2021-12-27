@@ -102,13 +102,24 @@ def trace_{id}():
                         self.recording_trace = True
                         recording_interpreter = RecordingInterpreter(self.pc, self.stack, self.code, self.loops, self.recording_trace, old_pc)
                         recording_interpreter.trace = loop_info['trace']
-                        recording_interpreter.inner = navigate_inner(e.path, recording_interpreter.trace)
+                        parent_if = navigate_inner(e.path[0:-1], recording_interpreter.trace)
+                        assert parent_if[0] == TRACE_GUARD_GT
+                        inner = []
+                        parent_if[e.path[-1]] = inner
+                        recording_interpreter.inner = inner
                         try:
                             recording_interpreter.interpret()
                             return
                         except TraceRecordingEnded:
                             self.pc = recording_interpreter.pc
                             self.recording_trace = False
+                            # get rid of the duplicate conditional due to restarting the trace
+                            assert inner[0][0] == TRACE_GUARD_GT
+                            new_child = inner[0][e.path[-1]]
+                            other_child = parent_if[3 if e.path[-1] == 2 else 2]
+                            left, right = (new_child, other_child) if e.path[-1] == 2 else (other_child, new_child)
+                            parent_if[2] = left
+                            parent_if[3] = right
                             loop_info['executable_trace'] = self.translate_trace(loop_info)
                             print("Recompiled execution trace:", loop_info['executable_trace'])
                             TracingInterpreter.run_JUMP(self)
@@ -154,11 +165,8 @@ class GuardFailed(Exception):
         self.path = path
 
 def navigate_inner(path, trace):
-    if path[1:]==[]:
-        assert trace[path[0]] == None
-        inner = []
-        trace[path[0]] = inner
-        return inner
+    if path==[]:
+        return trace
     else:
         return navigate_inner(path[1:], trace[path[0]])
 
