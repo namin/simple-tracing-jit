@@ -1,4 +1,4 @@
-from simple_tracing_jit import *
+from simple_language import *
 
 one_simple_loop = [
     PUSH, 0,     # 0
@@ -100,7 +100,12 @@ examples = [
     ("4", nested_double_loops, 21)
 ]
 
+import simple_interpreter
+import simple_tracing_jit
+
 for (title, code, expected) in examples:
     print("# Example", title)
-    res = interpret(code)
-    assert expected == res, "in example %s, expected %d, got %d" % (title, expected, res)
+    res1 = simple_interpreter.interpret(code)
+    assert expected == res1, "in example %s, expected %d, got %d" % (title, expected, res)
+    res2 = simple_tracing_jit.interpret(code)
+    assert expected == res2, "in example %s, expected %d, got %d" % (title, expected, res)
