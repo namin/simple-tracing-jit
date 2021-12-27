@@ -35,9 +35,25 @@ nested_loops = [
     HALT         # 19
 ]
 
+nested_loops2 = [
+    PUSH, 0,     # 0 - outer loop counter
+    GT, 30, 22, # 2 - start of outer loop
+    GT, 24, 18, # +3
+    PUSH, 0,     # 5+3 - inner loop counter
+    GT, 15, 17,  # 7+3 - start of inner loop
+    ADD, 1,      # 10+3
+    JUMP, 10,     # 12+3 - end of inner loop
+    POP,         # 14+3
+    ADD, 2,      # 15+3
+    JUMP, 2,      # 17+3 - end of outer loop
+
+    HALT         # 19+3
+]
+
 code = one_simple_loop
 code = two_simple_loops
 code = nested_loops
+code = nested_loops2
 
 class Interpreter(object):
     def __init__(self, pc, stack, code):
