@@ -57,3 +57,7 @@ class Interpreter(object):
 
 def interpret(code):
     return Interpreter(0, [], code).interpret()
+
+if __name__ == '__main__':
+    import examples
+    examples.run(interpret)

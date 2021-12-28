@@ -107,3 +107,17 @@ examples = [
     ("3b", nested_loops2, 72),
     ("4", nested_double_loops, 21)
 ]
+
+def run(interpret, kind=''):
+    for (title, code, expected) in examples:
+        print("# Example", title, kind)
+        res = interpret(code)
+        assert expected == res, "in example %s, expected %d, got %d" % (title, expected, res)
+
+if __name__ == '__main__':
+    import simple_interpreter
+    import simple_tracing_jit
+    import tree_tracing_jit
+    run(simple_interpreter.interpret, "simple")
+    run(simple_tracing_jit.interpret, "simple tracing JIT")
+    run(tree_tracing_jit.interpret, "tree tracing JIT")

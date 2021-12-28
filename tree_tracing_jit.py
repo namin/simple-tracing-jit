@@ -271,8 +271,5 @@ def interpret(code):
         return interpreter.stack[-1]
 
 if __name__ == '__main__':
-    from examples import examples
-    for (title, code, expected) in examples:
-        print("# Example", title)
-        res = interpret(code)
-        assert expected == res, "in example %s, expected %d, got %d" % (title, expected, res)
+    import examples
+    examples.run(interpret)
