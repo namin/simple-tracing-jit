@@ -37,7 +37,7 @@ class Interpreter(object):
 
     def interpret(self):
         while True:
-            #print("running ", self.pc)
+            print("running ", self.pc)
             instruction_to_run = self.code[self.pc]
             self.at_each_step()
 
