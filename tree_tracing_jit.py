@@ -203,7 +203,7 @@ class RecordingInterpreter(TracingInterpreter):
         if next_pc < current_pc:
             self.n_backjumps += 1
         if self.n_backjumps > 3:
-            print('Too many recorded backjumps')
+            print("Too many recorded backjumps")
             raise AbandonedTrace()
 
     def run_PUSH(self):
