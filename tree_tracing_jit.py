@@ -127,6 +127,7 @@ def trace_{id}():
                         except AbandonedTrace:
                             print("Trace abandoned")
                             self.pc = recording_interpreter.pc
+                            self.recording_trace = False
                             self.print_state()
                             parent_if[e.path[-1]] = None
                             return
