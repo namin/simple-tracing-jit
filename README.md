@@ -4,10 +4,12 @@ This technique has been implemented in PyPy [[Bolz et al., 2009](https://dl.acm.
 
 ## TODOs / Limitations
 
+- [ ] Does not implement any heuristics to stop recording once in a hot loop.
+
 - [ ] Does not JIT conditional jumps, see `one_simple_loop2`.
 
 ### Can be solved with Trace Trees
 
-- [ ] For nested loops, the outer loop keeps being re-entered rather than entered once. This is because the inner exception bubbles up to the top.
+- [x] For nested loops, the outer loop keeps being re-entered rather than entered once. This is because the inner exception bubbles up to the top.
 
-- [ ] A loop is not recompiled even though a new path becomes hot, see `nested_loops2`.
+- [x] A loop is not recompiled even though a new path becomes hot, see `nested_loops2`.
