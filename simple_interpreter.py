@@ -6,6 +6,9 @@ class Interpreter(object):
         self.stack = stack
         self.code = code
 
+    def at_each_step(self):
+        pass
+
     def run_PUSH(self):
         #print("Running PUSH")
         self.stack.append(self.code[self.pc+1])
@@ -36,6 +39,7 @@ class Interpreter(object):
         while True:
             #print("running ", self.pc)
             instruction_to_run = self.code[self.pc]
+            self.at_each_step()
 
             if instruction_to_run == PUSH:
                 self.run_PUSH()

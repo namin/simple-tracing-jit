@@ -124,6 +124,12 @@ def trace_{id}():
                             print("Recompiled execution trace:", loop_info['executable_trace'])
                             TracingInterpreter.run_JUMP(self)
                             return
+                        except AbandonedTrace:
+                            print("Trace abandoned")
+                            self.pc = recording_interpreter.pc
+                            self.print_state()
+                            parent_if[e.path[-1]] = None
+                            return
 
                 if loop_info['hotness'] > 10 and loop_info['has_trace'] == False:
                     if not self.recording_trace:
@@ -148,6 +154,10 @@ def trace_{id}():
                             print("Now jumping into compiled trace!")
                             TracingInterpreter.run_JUMP(self) # recursive call, but this time it will run the compiled trace
                             return
+                        except AbandonedTrace:
+                            print("Trace abandoned")
+                            self.pc = recording_interpreter.pc
+                            return
 
             else:
                 self.loops[(new_pc, old_pc)] = {'hotness': 1, 'has_trace': False}
@@ -171,16 +181,28 @@ def navigate_inner(path, trace):
     else:
         return navigate_inner(path[1:], trace[path[0]])
 
+class AbandonedTrace(Exception):
+    pass
+
 class RecordingInterpreter(TracingInterpreter):
     def __init__(self, pc, stack, code, loops, recording_trace, end_of_trace):
         self.trace = []
         self.inner = self.trace
         self.end_of_trace = end_of_trace
+        self.n_backjumps = 0
+        self.n_steps = 0
 
         TracingInterpreter.__init__(self, pc, stack, code, loops, recording_trace)
 
     def is_end_of_trace(self, current_pc):
         return current_pc == self.end_of_trace
+
+    def maybe_abandon_trace(self, current_pc, next_pc):
+        if next_pc < current_pc:
+            self.n_backjumps += 1
+        if self.n_backjumps > 3:
+            print('Too many recorded backjumps')
+            raise AbandonedTrace()
 
     def run_PUSH(self):
         #print("Recording PUSH")
@@ -211,9 +233,11 @@ class RecordingInterpreter(TracingInterpreter):
     def run_JUMP(self):
         end_of_trace = self.is_end_of_trace(self.pc)
         #print("Recording JUMP")
-        self.inner.append( (TRACE_INSTR, self.code[self.pc], self.code[self.pc+1]) )
+        next_pc = self.code[self.pc+1]
+        self.inner.append( (TRACE_INSTR, self.code[self.pc], next_pc) )
         if end_of_trace:
             raise TraceRecordingEnded()
+        self.maybe_abandon_trace(self.pc, next_pc)
 
         TracingInterpreter.run_JUMP(self)
 
@@ -226,6 +250,13 @@ class RecordingInterpreter(TracingInterpreter):
         #print("Recording ENTER_TRACE")
         self.inner.append( (TRACE_ENTER_TRACE, loop_info) )
         TracingInterpreter.enter_trace(self, loop_info)
+
+    def at_each_step(self):
+        TracingInterpreter.at_each_step(self)
+        self.n_steps += 1
+        if self.n_steps > 10:
+            print("Too many steps")
+            raise AbandonedTrace()
 
 class Halted(Exception):
     pass
