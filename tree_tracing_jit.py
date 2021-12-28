@@ -158,6 +158,7 @@ def trace_{id}():
                         except AbandonedTrace:
                             print("Trace abandoned")
                             self.pc = recording_interpreter.pc
+                            self.recording_trace = False
                             return
 
             else:
