@@ -15,7 +15,7 @@ This technique has been implemented in PyPy [[Bolz et al., 2009](https://dl.acm.
   It detects hot loops by backjumps, records a trace, generates direct Python code, executes it when reaching the loop again, resumes interpreted execution when failing on a guard.
   It does not extend or recompute a trace even when the execution keeps failing on a guard.
 - [`tree_tracing_jit`](tree_tracing_jit.py): a tree-tracing interpreter following on Gal et al. (2006).
-  It resumes recording after a guard failure, completing the trace in a tree-like fashion.
+  It resumes recording after a guard failure, completing the trace at the failure resulting in a tree-like fashion.
 
 ## Running
 
