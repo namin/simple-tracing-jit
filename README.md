@@ -4,7 +4,7 @@ This technique has been implemented in PyPy [[Bolz et al., 2009](https://dl.acm.
 
 ## TODOs / Limitations
 
-- [ ] Find a program that requires more than one trace in the tree tracing jit.
+- [ ] Find a program that requires more than one trace in the tree tracing JIT.
 
 - [x] Does not implement any heuristics to stop recording once in a hot loop.
 
