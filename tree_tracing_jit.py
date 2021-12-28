@@ -21,7 +21,7 @@ def trace_{id}():
     count = 0
     while True:
         count += 1
-        #print('in trace_{id}, iteration '+str(count))
+        print('in trace_{id}, iteration '+str(count))
 '''.format_map({'id': loop_info['trace_id']})
         def inner(trace, s='', p=[]):
             ec = ''

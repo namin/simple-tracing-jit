@@ -2,7 +2,7 @@ from simple_language import *
 
 one_simple_loop = [
     PUSH, 0,     # 0
-    GT, 50000, 9, # 2
+    GT, 500, 9, # 2
     ADD, 1,       # 5
     JUMP, 2,      # 7
     HALT         # 9
@@ -25,11 +25,11 @@ one_simple_loop2 = [
 
 two_simple_loops = [
     PUSH, 0,     # 0
-    GT, 50000, 9, # 2
+    GT, 500, 9, # 2
     ADD, 1,       # 5
     JUMP, 2,      # 7
 
-    GT, 100000, 16, # 9
+    GT, 100, 16, # 9
     ADD, 2,         # 12
     JUMP, 9,        # 14
 
@@ -98,10 +98,10 @@ nested_double_loops = [
 ]
 
 examples = [
-    ("1", one_simple_loop, 50001),
+    ("1", one_simple_loop, 501),
     ("1a", one_simple_loop1, 11),
     ("1b", one_simple_loop2, 0),
-    ("2", two_simple_loops, 100001),
+    ("2", two_simple_loops, 501),
     ("3", nested_loops, 32),
     ("3a", nested_loops1, 32),
     ("3b", nested_loops2, 72),
