@@ -34,7 +34,7 @@ class Interpreter(object):
 
     def interpret(self):
         while True:
-            print("running ", self.pc)
+            #print("running ", self.pc)
             instruction_to_run = self.code[self.pc]
 
             if instruction_to_run == PUSH:
@@ -48,7 +48,7 @@ class Interpreter(object):
             elif instruction_to_run == POP:
                 self.run_POP()
             elif instruction_to_run == HALT:
-                print("HALT")
+                #print("HALT")
                 return self.stack[-1]
 
 def interpret(code):

@@ -109,7 +109,7 @@ def trace_{id}():
                         recording_interpreter.inner = inner
                         try:
                             recording_interpreter.interpret()
-                            return
+                            raise Halted()
                         except TraceRecordingEnded:
                             self.pc = recording_interpreter.pc
                             self.recording_trace = False
@@ -135,7 +135,7 @@ def trace_{id}():
                         try:
                             print("Trace recording started at pc =", new_pc, "until (included) pc =", old_pc)
                             recording_interpreter.interpret()
-                            return
+                            raise Halted()
                         except TraceRecordingEnded:
                             print("Trace recording ended!")
                             self.pc = recording_interpreter.pc # the rest are mutable datastructures that were shared with the recording interp
@@ -227,9 +227,15 @@ class RecordingInterpreter(TracingInterpreter):
         self.inner.append( (TRACE_ENTER_TRACE, loop_info) )
         TracingInterpreter.enter_trace(self, loop_info)
 
+class Halted(Exception):
+    pass
 
 def interpret(code):
-    return TracingInterpreter(0, [], code, {}, False).interpret()
+    interpreter = TracingInterpreter(0, [], code, {}, False)
+    try:
+        return interpreter.interpret()
+    except Halted:
+        return interpreter.stack[-1]
 
 from examples import examples
 for (title, code, expected) in examples:
