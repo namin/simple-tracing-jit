@@ -123,6 +123,7 @@ def trace_{id}():
                             loop_info['executable_trace'] = self.translate_trace(loop_info)
                             print("Recompiled execution trace:", loop_info['executable_trace'])
                             TracingInterpreter.run_JUMP(self)
+                            return
 
                 if loop_info['hotness'] > 10 and loop_info['has_trace'] == False:
                     if not self.recording_trace:
