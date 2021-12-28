@@ -4,7 +4,9 @@ This technique has been implemented in PyPy [[Bolz et al., 2009](https://dl.acm.
 
 ## TODOs / Limitations
 
-- [ ] Does not implement any heuristics to stop recording once in a hot loop.
+- [ ] Find a program that requires more than one trace in the tree tracing jit.
+
+- [x] Does not implement any heuristics to stop recording once in a hot loop.
 
 - [ ] Does not JIT conditional jumps, see `one_simple_loop2`.
 
