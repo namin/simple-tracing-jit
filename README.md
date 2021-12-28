@@ -19,4 +19,6 @@ This technique has been implemented in PyPy [[Bolz et al., 2009](https://dl.acm.
 
 ## Running
 
-The code is in Python 3. `python <FILE>` to run the examples specifically for file `<FILE>`. `python examples.py` runs all examples on all interpreters.
+The code is in Python 3.
+The command `python <FILE>` runs the examples specifically for file `<FILE>`.
+The command `python examples.py` runs all examples on all interpreters.
