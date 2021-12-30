@@ -97,6 +97,24 @@ nested_double_loops = [
     HALT         # 29
 ]
 
+triple_nested_loops = [
+    PUSH, 0,     # 0
+    GT, 22, 29,  # 2
+    PUSH, 0,     # 5
+    GT, 14, 24,  # 7
+    PUSH, 0,     # 10
+    GT, 12, 19,  # 12
+    ADD, 1,      # 15
+    JUMP, 12,    # 17
+    POP,         # 19
+    ADD, 1,      # 20
+    JUMP, 7,     # 22
+    POP,         # 24
+    ADD, 1,      # 25
+    JUMP, 2,     # 27
+    HALT         # 29
+]
+
 examples = [
     ("1", one_simple_loop, 501),
     ("1a", one_simple_loop1, 11),
@@ -105,7 +123,8 @@ examples = [
     ("3", nested_loops, 32),
     ("3a", nested_loops1, 32),
     ("3b", nested_loops2, 72),
-    ("4", nested_double_loops, 21)
+    ("4", nested_double_loops, 21),
+    ("5", triple_nested_loops, 23)
 ]
 
 def run(interpret, kind=''):
