@@ -122,6 +122,8 @@ def trace_{id}():
                             self.pc = recording_interpreter.pc
                             self.recording_trace = False
                             # get rid of the duplicate conditional due to restarting the trace
+                            # alternatively, we could have advanced to the right branch, but
+                            # this requires some duplication of the semantics
                             assert inner[0][0] == TRACE_GUARD_GT
                             new_child = inner[0][e.path[-1]]
                             other_child = parent_if[3 if e.path[-1] == 2 else 2]
