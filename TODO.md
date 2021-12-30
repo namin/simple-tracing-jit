@@ -1,6 +1,6 @@
 # TODOs / Limitations
 
-- [ ] We can keep entering traces while recording after failure, going deeper and deeper into recordings.
+- [x] We can keep entering traces while recording after failure, going deeper and deeper into recordings.
 
 - [ ] When recording after a guard fails, backjumps are not accounted for as hot loops.
 

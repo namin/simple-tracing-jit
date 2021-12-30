@@ -98,6 +98,9 @@ def trace_{id}():
                         self.print_state()
                         # Trace execution was not good for this iteration, so, fallback to RECORDING interpreter
                         # the jitted code is modifying interpreter state, no need to sync
+                        if self.recording_trace:
+                            print("Already recording...")
+                            return
                         print("Recording after guard")
                         self.recording_trace = True
                         recording_interpreter = RecordingInterpreter(self.pc, self.stack, self.code, self.loops, self.recording_trace, old_pc)
@@ -109,7 +112,7 @@ def trace_{id}():
                         recording_interpreter.inner = inner
                         try:
                             recording_interpreter.interpret()
-                            raise Halted()
+                            return
                         except TraceRecordingEnded:
                             self.pc = recording_interpreter.pc
                             self.recording_trace = False
@@ -142,7 +145,7 @@ def trace_{id}():
                         try:
                             print("Trace recording started at pc =", new_pc, "until (included) pc =", old_pc)
                             recording_interpreter.interpret()
-                            raise Halted()
+                            return
                         except TraceRecordingEnded:
                             print("Trace recording ended!")
                             self.pc = recording_interpreter.pc # the rest are mutable datastructures that were shared with the recording interp
@@ -260,15 +263,8 @@ class RecordingInterpreter(TracingInterpreter):
             print("Too many steps")
             raise AbandonedTrace()
 
-class Halted(Exception):
-    pass
-
 def interpret(code):
-    interpreter = TracingInterpreter(0, [], code, {}, False)
-    try:
-        return interpreter.interpret()
-    except Halted:
-        return interpreter.stack[-1]
+    return TracingInterpreter(0, [], code, {}, False).interpret()
 
 if __name__ == '__main__':
     import examples
