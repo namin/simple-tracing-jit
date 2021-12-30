@@ -14,7 +14,7 @@ and TraceMonkey [[Gal et al., 2009](https://dl.acm.org/doi/10.1145/1543135.15425
 - [`examples`](examples.py): example programs.
 
 - [`simple_interpreter`](simple_interpreter.py): a simple interpreter.
-  It loops until `HALT`, one command at a time.
+  It loops until `HALT`, following the program counter.
 
 - [`simple_tracing_jit`](simple_tracing_jit.py): a simple JIT tracing interpreter.
   It detects hot loops by backjumps, records a trace, generates direct Python code, executes it when reaching the loop again, resumes interpreted execution when failing on a guard.
