@@ -119,6 +119,8 @@ def trace_{id}():
                             # resume on right
                             assert e.path[-1] == 3
                             self.pc = self.pc + 3
+                        inner.append((TRACE_INSTR, JUMP, self.pc))
+
                         self.recording_trace = True
                         recording_interpreter = RecordingInterpreter(self.pc, self.stack, self.code, self.loops, self.recording_trace, old_pc)
                         recording_interpreter.trace = trace
