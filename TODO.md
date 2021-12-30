@@ -1,8 +1,10 @@
 # TODOs / Limitations
 
-- [x] We can keep entering traces while recording after failure, going deeper and deeper into recordings.
+- [ ] If we fail in a trace inside a trace, we bubble up to the outer trace and record from there. This seems wrong.
 
 - [ ] When recording after a guard fails, backjumps are not accounted for as hot loops.
+
+- [x] We can keep entering traces while recording after failure, going deeper and deeper into recordings.
 
 - [x] Find a program that requires more than one trace in the tree tracing JIT.
 
