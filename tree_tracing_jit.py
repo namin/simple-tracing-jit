@@ -107,13 +107,21 @@ def trace_{id}():
                             print("Bubbled up... not recording")
                             return
                         print("Recording after guard")
-                        self.recording_trace = True
-                        recording_interpreter = RecordingInterpreter(self.pc, self.stack, self.code, self.loops, self.recording_trace, old_pc)
-                        recording_interpreter.trace = loop_info['trace']
-                        parent_if = navigate_inner(e.path[0:-1], recording_interpreter.trace)
+                        trace = loop_info['trace']
+                        parent_if = navigate_inner(e.path[0:-1], trace)
                         assert parent_if[0] == TRACE_GUARD_GT
                         inner = []
                         parent_if[e.path[-1]] = inner
+                        if e.path[-1] == 2:
+                            # resume on left
+                            self.pc = self.code[self.pc+2]
+                        else:
+                            # resume on right
+                            assert e.path[-1] == 3
+                            self.pc = self.pc + 3
+                        self.recording_trace = True
+                        recording_interpreter = RecordingInterpreter(self.pc, self.stack, self.code, self.loops, self.recording_trace, old_pc)
+                        recording_interpreter.trace = trace
                         recording_interpreter.inner = inner
                         try:
                             recording_interpreter.interpret()
@@ -121,15 +129,6 @@ def trace_{id}():
                         except TraceRecordingEnded:
                             self.pc = recording_interpreter.pc
                             self.recording_trace = False
-                            # get rid of the duplicate conditional due to restarting the trace
-                            # alternatively, we could have advanced to the right branch, but
-                            # this requires some duplication of the semantics
-                            assert inner[0][0] == TRACE_GUARD_GT
-                            new_child = inner[0][e.path[-1]]
-                            other_child = parent_if[3 if e.path[-1] == 2 else 2]
-                            left, right = (new_child, other_child) if e.path[-1] == 2 else (other_child, new_child)
-                            parent_if[2] = left
-                            parent_if[3] = right
                             loop_info['executable_trace'] = self.translate_trace(loop_info)
                             print("Recompiled execution trace:", loop_info['executable_trace'])
                             TracingInterpreter.run_JUMP(self)
