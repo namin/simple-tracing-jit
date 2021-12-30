@@ -1,6 +1,8 @@
 # TODOs / Limitations
 
-- [ ] If we fail in a trace inside a trace, we bubble up to the outer trace and record from there. This seems wrong.
+- [x] If we fail in a trace inside a trace, we bubble up to the outer trace and record from there. This seems wrong.
+
+- [ ] Have an example that exercise bubbling up failure. Perhaps, something with nested traces?
 
 - [ ] When recording after a guard fails, backjumps are not accounted for as hot loops.
 

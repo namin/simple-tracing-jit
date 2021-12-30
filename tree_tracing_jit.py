@@ -28,7 +28,7 @@ def trace_{id}():
             executable_trace = ''
             if trace is None:
                 executable_trace += f'''
-        {s}raise GuardFailed(count, {p})'''
+        {s}raise GuardFailed({id}, count, {p})'''
                 return executable_trace
             for (i, trace_step) in enumerate(trace):
                 if trace_step[0] == TRACE_INSTR:
@@ -101,6 +101,10 @@ def trace_{id}():
                         # the jitted code is modifying interpreter state, no need to sync
                         if self.recording_trace:
                             print("Already recording...")
+                            return
+                        # TODO: no example exercises this
+                        if e.trace_id != loop_info['trace_id']:
+                            print("Bubbled up... not recording")
                             return
                         print("Recording after guard")
                         self.recording_trace = True
@@ -177,7 +181,8 @@ class TraceRecordingEnded(Exception):
 TRACE_INSTR, TRACE_GUARD_GT, TRACE_ENTER_TRACE  = range(3)
 
 class GuardFailed(Exception):
-    def __init__(self, count, path):
+    def __init__(self, trace_id, count, path):
+        self.trace_id = trace_id
         self.count = count
         self.path = path
 
