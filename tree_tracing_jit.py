@@ -16,7 +16,7 @@ class TracingInterpreter(Interpreter):
     def translate_trace(self, loop_info):
         trace = loop_info['trace']
         # create python code to run the trace
-        ec = '''
+        executable_trace = '''
 def trace_{id}():
     count = 0
     while True:
@@ -24,47 +24,47 @@ def trace_{id}():
         print('in trace_{id}, iteration '+str(count))
 '''.format_map({'id': loop_info['trace_id']})
         def inner(trace, s='', p=[]):
-            ec = ''
+            executable_trace = ''
             if trace is None:
-                ec += '''
+                executable_trace += '''
         {s}raise GuardFailed(count, {p})'''.format_map({'s':s,'p':p})
-                return ec
+                return executable_trace
             for (i, trace_step) in enumerate(trace):
                 if trace_step[0] == TRACE_INSTR:
                     if trace_step[1] == JUMP:
-                        ec += '''
+                        executable_trace += '''
         {s}self.pc = {x}'''.format_map({'s':s,'x':trace_step[2]})
                     elif trace_step[1] == ADD:
-                        ec += '''
+                        executable_trace += '''
         {s}self.stack[-1] += {x}
         {s}self.pc += 2'''.format_map({'s':s,'x':trace_step[2]})
                     elif trace_step[1] == PUSH:
-                        ec += '''
+                        executable_trace += '''
         {s}self.stack.append({x})
         {s}self.pc += 2'''.format_map({'s':s,'x':trace_step[2]})
                     elif trace_step[1] == POP:
-                        ec += '''
+                        executable_trace += '''
         {s}self.stack.pop()
         {s}self.pc += 1'''.format_map({'s':s})
 
                 elif trace_step[0] == TRACE_GUARD_GT:
-                    ec += '''
+                    executable_trace += '''
         {s}if self.stack[-1] > {c}:'''.format_map({'s':s,'c':trace_step[1]})
-                    ec += inner(trace_step[2], s+'    ', p+[i, 2])
-                    ec += '''
+                    executable_trace += inner(trace_step[2], s+'    ', p+[i, 2])
+                    executable_trace += '''
         {s}else:'''.format_map({'s':s})
-                    ec += inner(trace_step[3], s+'    ', p+[i, 3])
+                    executable_trace += inner(trace_step[3], s+'    ', p+[i, 3])
 
                 elif trace_step[0] == TRACE_ENTER_TRACE:
-                    ec += '''
+                    executable_trace += '''
         {s}trace_{x}()'''.format_map({'s':s,'x':trace_step[1]['trace_id']})
                 else:
                     raise UnknownTraceRecordError()
 
-            return ec
+            return executable_trace
 
-        ec += inner(trace)
-        return ec
+        executable_trace += inner(trace)
+        return executable_trace
 
     def print_state(self):
         print("State is pc =", self.pc, "stack =", self.stack)
